@@ -24,8 +24,8 @@ NPM
 npm install textics-stream
 ```
 
-Using textics
-----------
+Using textics-stream
+--------------------
 
 ```javascript
 import TStream from 'textics-stream';
