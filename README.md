@@ -49,7 +49,9 @@ ts.textics.once('getAll', (allStat) => {
   //
 });
 ```
+
 For pushing the stream to another pipe, pass `{ isPush: true }` to `TStream` constructor.
+
 ```javascript
 const ts = new TStream({isPush: true})
 

@@ -8,9 +8,9 @@ import path from 'path';
 import stream from 'stream';
 import util from 'util';
 
-// import TStream from '../src';
+import TStream from '../src';
 
-import TStream from '../lib/tStream';
+// import TStream from '../lib/tStream';
 
 // console.log(TStream);
 const expect = chai.expect;
