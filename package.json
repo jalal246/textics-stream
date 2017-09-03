@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha  --compilers js:babel-core/register test",
+    "test": "mocha  --compilers js:babel-core/register --recursive test",
     "test:gen": "mocha   --compilers js:babel-core/register test/general.test.js -w",
     "test:oneline": "mocha   --compilers js:babel-core/register test/one.line.ending.test.js -w",
     "test:noline": "mocha   --compilers js:babel-core/register test/no.line.ending.test.js -w",
