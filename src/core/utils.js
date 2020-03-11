@@ -1,3 +1,10 @@
+/**
+ * Finds last end location in a given string. If not found, function will return
+ * the whole string length.
+ *
+ * @param {string} str
+ * @returns {number}
+ */
 function getSliceCharNumber(str) {
   const { length } = str;
 

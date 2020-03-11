@@ -1,6 +1,6 @@
 import getSliceCharNumber from "./utils";
 
-const { textics, getNewLineChar, CR, CRLF, LF } = require("textics");
+const { textics } = require("textics");
 
 class Statistics {
   constructor() {
