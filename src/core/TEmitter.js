@@ -1,9 +1,6 @@
 /* eslint func-names: ["error", "never"] */
 
-import {
-  util,
-  EventEmitter,
-} from '../deps';
+import { util, EventEmitter } from "../deps";
 
 function TEmitter() {
   EventEmitter.call(this);
