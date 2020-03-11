@@ -5,7 +5,7 @@
  * @param {string} str
  * @returns {number}
  */
-function getSliceCharNumber(str) {
+function getLastLineCharNum(str) {
   const { length } = str;
 
   let sliceAt = length;
@@ -43,4 +43,4 @@ function getSliceCharNumber(str) {
   return sliceAt;
 }
 
-export default getSliceCharNumber;
+export default getLastLineCharNum;

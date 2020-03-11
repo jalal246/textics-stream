@@ -1,4 +1,4 @@
-import getSliceCharNumber from "./utils";
+import getLastLineCharNum from "./utils";
 
 const { textics } = require("textics");
 
@@ -12,6 +12,12 @@ class Statistics {
     this.pool = "";
   }
 
+  /**
+   * Gets string statistics and add it to class instance.
+   *
+   * @param {string} str to be counted
+   * @memberof Statistics
+   */
   count(str) {
     const { lines, words, chars, spaces } = textics(str);
 
@@ -21,6 +27,14 @@ class Statistics {
     this.spaces += spaces;
   }
 
+  /**
+   * Slices pool instance to two parts:
+   * First one from zero length to given number. The remaining will be stored as
+   * pool.
+   *
+   * @param {number} i
+   * @memberof Statistics
+   */
   slicePoolAt(i) {
     const toBeCount = this.pool.slice(0, i);
     this.count(toBeCount);
@@ -28,15 +42,26 @@ class Statistics {
     this.pool = this.pool.slice(i, this.pool.length);
   }
 
+  /**
+   * Counts the remaining char and flushes pool.
+   *
+   * @memberof Statistics
+   */
+  flush() {
+    this.count(this.pool);
+
+    this.pool = "";
+  }
+
   start(chunk) {
     this.pool += chunk.toString();
 
-    const sliceAtNum = getSliceCharNumber(this.pool);
+    const lastLineNum = getLastLineCharNum(this.pool);
 
-    this.slicePoolAt(sliceAtNum);
+    this.slicePoolAt(lastLineNum);
   }
 
-  getResults() {
+  getStat() {
     return {
       lines: this.lines,
       words: this.words,
