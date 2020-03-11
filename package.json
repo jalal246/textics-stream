@@ -14,7 +14,7 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "textics": "^1.0.0"
+    "textics": "^1.1.0"
   },
   "keywords": [
     "move-position",

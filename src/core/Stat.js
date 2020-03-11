@@ -1,13 +1,18 @@
-/* eslint no-underscore-dangle: ["error", { "allow": ["_transform", "_flush"] }] */
-/* eslint func-names: ["error", "never"] */
+import warn from "../err";
 
-import warn from '../err';
-import {
-  textics,
-} from '../deps';
+const textics = require("textics");
 
 const MAX_WARN_ALLOWED = 2;
 
+class Statistics {
+  getResults() {}
+  add() {}
+  flush() {}
+  slicePool() {}
+  count() {}
+}
+
+export default Statistics;
 function Stat() {
   this.allLines = 0;
   this.allWords = 0;
@@ -22,39 +27,28 @@ function Stat() {
   this.rounds = 0; // number of chunks dosent have newline, be hold in pool.
   this.warnSent = 0;
   this.isSliced = false;
-  this.pool = ''; // for handling chunks
+  this.pool = ""; // for handling chunks
 }
 
-// Stat.prototype.init = function () {
-//   this.allLines = 0;
-//   this.allWords = 0;
-//   this.allChars = 0;
-//   this.allSpaces = 0;
-//   // last
-//   this.lastln = 0;
-//   this.lastWrd = 0;
-//   this.lastChr = 0;
-//   this.lastSps = 0;
-// };
-
-Stat.prototype.getResults = function (type) {
-  return type === 'last' ?
-    {
-      lines: this.lastln,
-      words: this.lastWrd,
-      chars: this.lastChr,
-      spaces: this.lastSps,
-    } : {
-      lines: this.allLines,
-      words: this.allWords,
-      chars: this.allChars,
-      spaces: this.allSpaces,
-    };
+Stat.prototype.getResults = function(type) {
+  return type === "last"
+    ? {
+        lines: this.lastln,
+        words: this.lastWrd,
+        chars: this.lastChr,
+        spaces: this.lastSps
+      }
+    : {
+        lines: this.allLines,
+        words: this.allWords,
+        chars: this.allChars,
+        spaces: this.allSpaces
+      };
 };
 
-
-Stat.prototype.add = function (str, lastCall = false) {
+Stat.prototype.add = function(str, lastCall = false) {
   const statics = textics(str);
+
   this.lastln = lastCall ? 0 : statics.lines;
   this.lastWrd = statics.words;
   this.lastChr = statics.chars;
@@ -66,22 +60,21 @@ Stat.prototype.add = function (str, lastCall = false) {
   this.allSpaces += this.lastSps;
 };
 
-
 // fushing pool.
-Stat.prototype.flush = function (isLastChunk = true) {
+Stat.prototype.flush = function(isLastChunk = true) {
   this.add(this.pool, isLastChunk);
   if (isLastChunk) this.pool = undefined;
-  else this.pool = '';
+  else this.pool = "";
 };
 
-Stat.prototype.slicePool = function (i, CRLF) {
+Stat.prototype.slicePool = function(i, CRLF) {
   this.add(this.pool.slice(0, CRLF ? i - 1 : i));
   this.pool = this.pool.slice(i, this.pool.length);
   this.isSliced = true;
   if (this.rounds >= 0) this.rounds -= 1;
 };
 
-Stat.prototype.count = function (chunk) {
+Stat.prototype.count = function(chunk) {
   // reset isSliced
   this.isSliced = false;
   this.pool += chunk.toString();
