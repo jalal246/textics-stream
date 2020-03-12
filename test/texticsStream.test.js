@@ -16,37 +16,37 @@ const expectedSpaces = 1 * LOOP;
 const fileStatTest = path.join(__dirname, "txtStreamFileSample.txt");
 
 describe("Testing simple samples", () => {
-  // it("Creates file to test", () => {
-  //   const wr = fs.createWriteStream(fileStatTest);
-  //   for (let i = 0; i < LOOP; i += 1) {
-  //     wr.write(`${paragraph}\n`);
-  //   }
+  it("Creates file to test", () => {
+    const wr = fs.createWriteStream(fileStatTest);
 
-  //   wr.end();
-  // });
+    for (let i = 0; i < LOOP; i += 1) {
+      wr.write(`${paragraph}\n`);
+    }
+
+    wr.end();
+  });
 
   it("Gets all data once calculates it correctly", done => {
-    const rStream = fs.createReadStream(fileStatTest, {
-      highWaterMark: 65 * 1024
-    });
+    const rStream = fs.createReadStream(fileStatTest);
 
     const txtStream = new TexticsStream();
 
     rStream.pipe(txtStream);
 
-    txtStream.emitter.once("getStat", result => {
+    rStream.on("end", () => {
+      const result = txtStream.getStat();
+
       expect(result).to.deep.equal({
         lines: expectedLines + 1,
         words: expectedWords,
         chars: expectedChars,
         spaces: expectedSpaces
       });
-
       done();
     });
   });
 
-  it.only("Gets small chunks correctly", done => {
+  it("Gets small chunks correctly", done => {
     const rStream = fs.createReadStream(fileStatTest, {
       highWaterMark: 10
     });
@@ -55,7 +55,7 @@ describe("Testing simple samples", () => {
 
     rStream.pipe(txtStream);
 
-    txtStream.emitter.on("getStat", result => {
+    txtStream.on("latChunkStat", result => {
       expect(result).to.have.all.keys("lines", "words", "chars", "spaces");
     });
 
@@ -72,7 +72,7 @@ describe("Testing simple samples", () => {
     });
   });
 
-  // it("Deletes test-file", () => {
-  //   fs.unlinkSync(fileStatTest);
-  // });
+  it("Deletes test-file", () => {
+    fs.unlinkSync(fileStatTest);
+  });
 });

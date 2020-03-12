@@ -19,7 +19,9 @@ class TexticsStream extends Transform {
 
     this.pool = "";
 
-    this.emitter = new EventEmitter();
+    const { emit } = new EventEmitter();
+
+    this.emit = emit;
   }
 
   /**
@@ -29,7 +31,11 @@ class TexticsStream extends Transform {
    * @memberof TexticsStream
    */
   count(str) {
-    const { lines, words, chars, spaces } = textics(str);
+    const latChunk = textics(str);
+
+    this.emit("latChunkStat", latChunk);
+
+    const { lines, words, chars, spaces } = latChunk;
 
     this.lines += lines;
     this.words += words;
@@ -106,7 +112,7 @@ class TexticsStream extends Transform {
      */
     this.push(chunk);
 
-    this.emitter.emit("getStat", this.getStat());
+    this.emit("totalChunkStat", this.getStat());
 
     if (cb) cb();
   }
@@ -120,8 +126,6 @@ class TexticsStream extends Transform {
    */
   _flush(cb) {
     this.count(this.pool);
-
-    this.emitter.emit("end", this.getStat());
 
     this.pool = "";
 
