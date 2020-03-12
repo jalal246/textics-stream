@@ -1,44 +1,126 @@
 /* eslint-disable no-underscore-dangle */
-// eslint-disable-next-line max-classes-per-file
+import { textics } from "textics";
+
 import stream from "stream";
+
 import EventEmitter from "events";
-import Statistics from "./Statistics";
+import getLastLineCharNum from "./getLastLineCharNum";
 
 const { Transform } = stream;
 
-const statistics = new Statistics();
-
 class TexticsStream extends Transform {
-  constructor(args) {
-    super(args);
+  constructor() {
+    super();
+
+    this.lines = 0;
+    this.words = 0;
+    this.chars = 0;
+    this.spaces = 0;
+
+    this.pool = "";
 
     this.emitter = new EventEmitter();
-    this.statistics = statistics;
   }
 
+  /**
+   * Gets string TexticsStream and add it to class instance.
+   *
+   * @param {string} str to be counted
+   * @memberof TexticsStream
+   */
+  count(str) {
+    const { lines, words, chars, spaces } = textics(str);
+
+    this.lines += lines;
+    this.words += words;
+    this.chars += chars;
+    this.spaces += spaces;
+  }
+
+  /**
+   * Slices pool instance to two parts:
+   * First one from zero length to given number. The remaining will be stored as
+   * pool.
+   *
+   * @param {number} i
+   * @memberof TexticsStream
+   */
+  slicePoolAt(i) {
+    const toBeCount = this.pool.slice(0, i);
+    this.count(toBeCount);
+
+    this.pool = this.pool.slice(i, this.pool.length);
+  }
+
+  /**
+   * Start counting.
+   *
+   * @param {string} chunk
+   * @memberof TexticsStream
+   */
+  start(chunk) {
+    this.pool += chunk.toString();
+
+    const lastLineNum = getLastLineCharNum(this.pool);
+
+    this.slicePoolAt(lastLineNum);
+  }
+
+  /**
+   * Gets the TexticsStream.
+   *
+   * @returns {Object} - { lines, words, chars, spaces}
+   * @memberof TexticsStream
+   */
+  getStat() {
+    return {
+      lines: this.lines,
+      words: this.words,
+      chars: this.chars,
+      spaces: this.spaces
+    };
+  }
+
+  /**
+   * Implementing a Transform Stream
+   *
+   * {@link https://nodejs.org/api/stream.html#stream_transform_transform_chunk_encoding_callback}
+   * @param {string} chunk
+   * @param {string} encoding
+   * @param {function} cb
+   * @memberof TexticsStream
+   */
   _transform(chunk, encoding, cb) {
-    const { start, getStat } = this.statistics;
     /**
      * Handling chunk
      */
-    start(chunk);
+    this.start(chunk);
 
     /**
      * Push it to readable.
      */
     this.push(chunk);
 
-    this.emitter("getStat", getStat());
+    this.emitter.emit("getStat", this.getStat());
 
-    cb();
+    if (cb) cb();
   }
 
+  /**
+   * Implementing a Transform Stream
+   *
+   * {@link https://nodejs.org/api/stream.html#stream_transform_flush_callback}
+   * @param {function} cb
+   * @memberof TexticsStream
+   */
   _flush(cb) {
-    const { flush, getStat } = this.statistics;
+    this.count(this.pool);
 
-    flush();
-    this.emitter("getStat", getStat());
-    cb();
+    this.emitter.emit("end", this.getStat());
+
+    this.pool = "";
+
+    if (cb) cb();
   }
 }
 
