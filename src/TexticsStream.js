@@ -1,16 +1,19 @@
 /* eslint-disable no-underscore-dangle */
+// eslint-disable-next-line max-classes-per-file
 import stream from "stream";
 import EventEmitter from "events";
 import Statistics from "./Statistics";
 
 const { Transform } = stream;
 
+const statistics = new Statistics();
+
 class TexticsStream extends Transform {
   constructor(args) {
     super(args);
 
-    this.statistics = new Statistics();
     this.emitter = new EventEmitter();
+    this.statistics = statistics;
   }
 
   _transform(chunk, encoding, cb) {
@@ -20,12 +23,12 @@ class TexticsStream extends Transform {
      */
     start(chunk);
 
-    this.emitter("textics", getStat());
-
     /**
      * Push it to readable.
      */
     this.push(chunk);
+
+    this.emitter("getStat", getStat());
 
     cb();
   }
@@ -34,7 +37,7 @@ class TexticsStream extends Transform {
     const { flush, getStat } = this.statistics;
 
     flush();
-    this.textics.emit("textics", getStat());
+    this.emitter("getStat", getStat());
     cb();
   }
 }

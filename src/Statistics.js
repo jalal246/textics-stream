@@ -1,15 +1,25 @@
+/* eslint-disable no-underscore-dangle */
+import { textics } from "textics";
+
+import stream from "stream";
+
+import EventEmitter from "events";
 import getLastLineCharNum from "./utils";
 
-const { textics } = require("textics");
+const { Transform } = stream;
 
-class Statistics {
+class Statistics extends Transform {
   constructor() {
+    super();
+
     this.lines = 0;
     this.words = 0;
     this.chars = 0;
     this.spaces = 0;
 
     this.pool = "";
+
+    this.emitter = new EventEmitter();
   }
 
   /**
@@ -42,17 +52,6 @@ class Statistics {
     this.pool = this.pool.slice(i, this.pool.length);
   }
 
-  /**
-   * Counts the remaining char and flushes pool.
-   *
-   * @memberof Statistics
-   */
-  flush() {
-    this.count(this.pool);
-
-    this.pool = "";
-  }
-
   start(chunk) {
     this.pool += chunk.toString();
 
@@ -68,6 +67,33 @@ class Statistics {
       chars: this.chars,
       spaces: this.spaces
     };
+  }
+
+  _transform(chunk, encoding, cb) {
+    /**
+     * Handling chunk
+     */
+    this.start(chunk);
+
+    /**
+     * Push it to readable.
+     */
+    this.push(chunk);
+
+    console.log("Statistics -> _transform -> this.emitter", this.emitter);
+    this.emitter.emit("getStat", this.getStat());
+
+    cb();
+  }
+
+  _flush(cb) {
+    this.count(this.pool);
+
+    this.pool = "";
+
+    this.emitter("getStat", this.getStat());
+
+    cb();
   }
 }
 
