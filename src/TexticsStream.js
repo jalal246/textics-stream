@@ -46,10 +46,11 @@ class TexticsStream extends Transform {
    * @memberof TexticsStream
    */
   slicePoolAt(i) {
-    const toBeCount = this.pool.slice(0, i);
-    this.count(toBeCount);
+    const toBeCounted = this.pool.slice(0, i);
 
-    this.pool = this.pool.slice(i, this.pool.length);
+    this.count(toBeCounted);
+
+    this.pool = this.pool.slice(i + 1, this.pool.length);
   }
 
   /**
@@ -63,7 +64,11 @@ class TexticsStream extends Transform {
 
     const lastLineNum = getLastLineCharNum(this.pool);
 
-    this.slicePoolAt(lastLineNum);
+    /**
+     * If lastLineNum is not defined, it means we haven't reached new line yet.
+     * So, ignore the calculations.
+     */
+    if (lastLineNum) this.slicePoolAt(lastLineNum);
   }
 
   /**

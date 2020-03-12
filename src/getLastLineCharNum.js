@@ -8,11 +8,15 @@
 function getLastLineCharNum(str) {
   const { length } = str;
 
-  let sliceAt = length;
+  let sliceAt;
 
   for (let i = length; i > 0; i -= 1) {
     const code = str.charCodeAt(i);
 
+    /**
+     * LF /\n/
+     * Code: 10
+     */
     if (code === 10) {
       sliceAt = i;
 
