@@ -10,10 +10,17 @@
   "author": "Jalal Maskoun <jimmy002020@gmail.com>",
   "license": "LGPL-3.0",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha -require @babel/register"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.7",
+    "@babel/register": "^7.8.6",
+    "chai": "^4.2.0",
+    "mocha": "^7.1.0"
+  },
   "dependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
     "textics": "^1.1.0"
   },
   "keywords": [
