@@ -52,6 +52,12 @@ class Statistics extends Transform {
     this.pool = this.pool.slice(i, this.pool.length);
   }
 
+  /**
+   * Start counting.
+   *
+   * @param {string} chunk
+   * @memberof Statistics
+   */
   start(chunk) {
     this.pool += chunk.toString();
 
@@ -60,6 +66,12 @@ class Statistics extends Transform {
     this.slicePoolAt(lastLineNum);
   }
 
+  /**
+   * Gets the statistics.
+   *
+   * @returns {Object} - { lines, words, chars, spaces}
+   * @memberof Statistics
+   */
   getStat() {
     return {
       lines: this.lines,
@@ -69,6 +81,15 @@ class Statistics extends Transform {
     };
   }
 
+  /**
+   * Implementing a Transform Stream
+   *
+   * {@link https://nodejs.org/api/stream.html#stream_transform_transform_chunk_encoding_callback}
+   * @param {string} chunk
+   * @param {string} encoding
+   * @param {function} cb
+   * @memberof Statistics
+   */
   _transform(chunk, encoding, cb) {
     /**
      * Handling chunk
@@ -80,20 +101,26 @@ class Statistics extends Transform {
      */
     this.push(chunk);
 
-    console.log("Statistics -> _transform -> this.emitter", this.emitter);
     this.emitter.emit("getStat", this.getStat());
 
-    cb();
+    if (cb) cb();
   }
 
+  /**
+   * Implementing a Transform Stream
+   *
+   * {@link https://nodejs.org/api/stream.html#stream_transform_flush_callback}
+   * @param {function} cb
+   * @memberof Statistics
+   */
   _flush(cb) {
     this.count(this.pool);
 
+    this.emitter.emit("end", this.getStat());
+
     this.pool = "";
 
-    this.emitter("getStat", this.getStat());
-
-    cb();
+    if (cb) cb();
   }
 }
 
