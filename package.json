@@ -2,10 +2,9 @@
   "name": "textics-stream",
   "version": "0.0.1",
   "description": "Node Text Statistics For Streams",
-  "source": "src/texticsStream.js",
+  "source": "src/index.js",
   "main": "dist/texticsStream.js",
   "module": "dist/texticsStream.module.js",
-  "unpkg": "dist/texticsStream.umd.js",
   "repository": "https://github.com/jalal246/textics-stream.git",
   "author": "Jalal Maskoun <jimmy002020@gmail.com>",
   "license": "LGPL-3.0",
@@ -14,9 +13,9 @@
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/preset-env": "^7.8.7",
     "@babel/register": "^7.8.6",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
     "chai": "^4.2.0",
     "mocha": "^7.1.0"
   },

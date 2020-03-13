@@ -1,9 +1,9 @@
 /* eslint-disable no-underscore-dangle */
+import stream from "stream";
+import EventEmitter from "events";
+
 import { textics } from "textics";
 
-import stream from "stream";
-
-import EventEmitter from "events";
 import getLastLineCharNum from "./getLastLineCharNum";
 
 const { Transform } = stream;
