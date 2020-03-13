@@ -1,7 +1,7 @@
 # textics-stream
 
 > `text/ics-stream` is a node version of
-> [textics](https://github.com/Jimmy02020/textics) for stream. Counts lines,
+> [textics](https://github.com/Jimmy02020/textics). Counts lines,
 > words, chars and spaces for a stream of strings :shower:
 
 ```bash
@@ -15,19 +15,16 @@ import TStream from "textics-stream";
 
 const txtStream = new TStream();
 
-// to start counting
-txtStream.start(chunk);
+// Start counting
+myStream.pipe(txtStream);
 
-// to get lat chunk stat result:
+// Get lat chunk stat result
 txtStream.on("latChunkStat", result => {
   // result : {lines, words, chars, spaces}
 });
 
-// to get all stat counters.
+// Get all stat counters
 txtStream.getStat();
-
-// to flush string pool & counters:
-txtStream._flush();
 ```
 
 ### Example
@@ -36,22 +33,21 @@ txtStream._flush();
 import TStream from "textics-stream";
 import fs from "fs";
 
-// Create read stream for file you want read form.
+// Create read stream for file you want to read form
 const rStream = fs.createReadStream(myFile);
 
 // Create TexticsStream instance
-const txtStream = new TexticsStream();
+const txtStream = new TStream();
 
-// pass reading stream to textics
+// Pass reading stream to textics
 rStream.pipe(txtStream);
 
-// for each chunk passed, give me the result
+// For each chunk passed, give me the result
 txtStream.on("latChunkStat", result => {
-  // so something with result.
-  expect(result).to.have.all.keys("lines", "words", "chars", "spaces");
+  // do something
 });
 
-// when reading finished, give me the final result
+// When done, give me the final result
 rStream.on("end", () => {
   const { lines, words, chars, spaces } = txtStream.getStat();
 });
