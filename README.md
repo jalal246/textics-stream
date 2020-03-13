@@ -1,74 +1,84 @@
-[![NPM](https://nodei.co/npm/textics-stream.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/textics-stream/)
+# textics-stream
 
-[![Travis](https://img.shields.io/travis/rust-lang/rust.svg?style=flat-square)](travis-ci.org/Jimmy02020/textics-stream)
-[![Codecov](https://img.shields.io/codecov/c/github/codecov/example-python.svg?style=flat-square)](https://codecov.io/gh/Jimmy02020/textics-stream)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://github.com/Jimmy02020/textics-stream/blob/master/LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/Jimmy02020/textics-stream/pulls)
+> `text/ics-stream` is a node version of
+> [textics](https://github.com/Jimmy02020/textics) for stream. Counts lines,
+> words, chars and spaces for a stream of strings :shower:
 
-
-> Node Text Statistics For Streams
-
-`textics-stream` is [textics](https://github.com/Jimmy02020/textics) which counts lines, words, chars and spaces for [stream](https://nodejs.org/api/stream.html).
-
-Getting Started
----------------
-
-GIT:
-```sh
-git clone git@github.com:jimmy02020/textics-stream.git
-cd textics-stream
-```
-
-NPM
-```sh
+```bash
 npm install textics-stream
 ```
 
-Using textics-stream
---------------------
+## API
 
-```javascript
-import TStream from 'textics-stream';
+```js
+import TStream from "textics-stream";
 
-const ts = new TStream()
+const txtStream = new TStream();
 
-readStream.pipe(ts);
+// to start counting
+txtStream.start(chunk);
 
-ts.textics.on('getLast', (lastChunkStat) => {
-  console.log(lastChunkStat);
+// to get lat chunk stat result:
+txtStream.on("latChunkStat", result => {
+  // result : {lines, words, chars, spaces}
 });
-ts.textics.once('getAll', (allStat) => {
-  console.log(allStat);
-  //
-  {
-    lines: 1830,
-    words: 4483,
-    chars: 12584,
-    spaces: 3004,
-  }
-  //
+
+// to get all stat counters.
+txtStream.getStat();
+
+// to flush string pool & counters:
+txtStream._flush();
+```
+
+### Example
+
+```js
+import TStream from "textics-stream";
+import fs from "fs";
+
+// Create read stream for file you want read form.
+const rStream = fs.createReadStream(myFile);
+
+// Create TexticsStream instance
+const txtStream = new TexticsStream();
+
+// pass reading stream to textics
+rStream.pipe(txtStream);
+
+// for each chunk passed, give me the result
+txtStream.on("latChunkStat", result => {
+  // so something with result.
+  expect(result).to.have.all.keys("lines", "words", "chars", "spaces");
+});
+
+// when reading finished, give me the final result
+rStream.on("end", () => {
+  const { lines, words, chars, spaces } = txtStream.getStat();
 });
 ```
 
-For pushing the stream to another pipe, pass `{ isPush: true }` to `TStream` constructor.
+### Related projects
 
-```javascript
-const ts = new TStream({isPush: true})
+- [textics](https://github.com/Jimmy02020/textics) - Using textics for browser.
 
-readStream
-  .pipe(ts)
-  .pipe(..)
-```
+- [packageSorter](https://github.com/jalal246/packageSorter) - Sorting packages
+  for monorepos production.
 
-Tests
------
+- [builderz](https://github.com/jalal246/builderz) - Building your project with zero config.
+
+- [corename](https://github.com/jalal246/corename) - Extracts package name.
+
+- [get-info](https://github.com/jalal246/get-info) - Utility functions for
+  projects production.
+
+- [move-position](https://github.com/jalal246/move-position) - Moves element in given array form index-A to index-B
+
+## Tests
 
 ```sh
 npm test
 ```
 
+## License
 
-License
--------
-
-This project is licensed under the [MIT License](https://github.com/Jimmy02020/textics-stream/blob/master/LICENSE)
+This project is licensed under the [GPL-3.0 License](https://github.com/Jimmy02020/textics-stream/blob/master/LICENSE)
